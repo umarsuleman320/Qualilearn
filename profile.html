@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="User Profile & Progress - QualiLearn">
+
+    <title>Profile • Umar • QualiLearn</title>
+
+    <!-- Bootstrap 5.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --accent: #ec4899;
+            --light-bg: #f8fafc;
+            --card-bg: white;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--light-bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .navbar, .sidebar {
+            background: white;
+            border-color: var(--border);
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.5rem;
+            margin: 0.25rem 0.75rem;
+            transition: all 0.25s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: var(--primary);
+            color: white !important;
+            transform: translateX(6px);
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 4rem 0 6rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-avatar {
+            width: 140px;
+            height: 140px;
+            border: 6px solid white;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+        }
+
+        .stat-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .badge-pill {
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .activity-heat {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+
+        .heat-day {
+            width: 100%;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .heat-0 { background: #ebedf0; }
+        .heat-1 { background: #c6e48b; }
+        .heat-2 { background: #7bc96f; }
+        .heat-3 { background: #239a3b; }
+        .heat-4 { background: #196127; }
+
+        .fade-in-up {
+            animation: fadeInUp 0.7s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container-fluid px-3 px-md-4">
+            <div class="d-flex align-items-center">
+                <button class="navbar-toggler me-3 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <a class="navbar-brand fw-bold fs-4 d-flex align-items-center" href="#">
+                    <i class="bi bi-rocket-takeoff-fill me-2 text-primary"></i>
+                    QualiLearn
+                </a>
+            </div>
+
+            <div class="d-flex align-items-center gap-3 gap-md-4">
+                <div class="dropdown">
+                    <button class="btn btn-link p-0" type="button" data-bs-toggle="dropdown">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold" style="width:42px;height:42px;">
+                                U
+                            </div>
+                            <span class="d-none d-md-inline fw-medium">Umar</span>
+                        </div>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow">
+                        <li><a class="dropdown-item active" href="#"><i class="bi bi-person me-2"></i> Profile</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i> Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar + Content -->
+    <div class="d-flex flex-grow-1">
+
+        <!-- Sidebar -->
+        <div class="offcanvas offcanvas-start offcanvas-lg" tabindex="-1" id="sidebarOffcanvas">
+            <div class="offcanvas-header border-bottom">
+                <h5 class="offcanvas-title fw-bold">
+                    <i class="bi bi-rocket-takeoff-fill me-2 text-primary"></i> Menu
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+            </div>
+            <div class="offcanvas-body p-0">
+                <div class="sidebar d-flex flex-column h-100">
+                    <ul class="nav flex-column pt-3">
+                        <li class="nav-item"><a class="nav-link" href="dashboard.html"><i class="bi bi-house-door-fill me-2"></i> Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" href="learning.html"><i class="bi bi-book-half me-2"></i> Subjects</a></li>
+                        <li class="nav-item"><a class="nav-link" href="assessment.html"><i class="bi bi-question-octagon me-2"></i> Past Questions</a></li>
+                        <li class="nav-item"><a class="nav-link" href="vocational.html"><i class="bi bi-tools me-2"></i> Vocational</a></li>
+                        <li class="nav-item"><a class="nav-link" href="flashcard.html"><i class="bi bi-card-text me-2"></i> Flashcards</a></li>
+                        <li class="nav-item"><a class="nav-link" href="games.html"><i class="bi bi-joystick me-2"></i> Games</a></li>
+                        <li class="nav-item"><a class="nav-link" href="chat.html"><i class="bi bi-robot me-2"></i> AI Support</a></li>
+                        <li class="nav-item mt-4"><a class="nav-link active" href="profile.html"><i class="bi bi-person-circle me-2"></i> Profile</a></li>
+                        <li class="nav-item"><a class="nav-link" href="settings.html"><i class="bi bi-sliders me-2"></i> Settings</a></li>
+                    </ul>
+
+                    <div class="mt-auto p-3 border-top">
+                        <a class="nav-link text-danger" href="login.html"><i class="bi bi-box-arrow-right me-2"></i> Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Profile Area -->
+        <main class="flex-grow-1">
+            <div class="profile-header text-center position-relative">
+                <div class="container position-relative" style="z-index: 2;">
+                    <div class="avatar rounded-circle mx-auto mb-3 fade-in-up">
+                        <img src="https://via.placeholder.com/140/ffffff/6366f1?text=U" alt="Umar" class="rounded-circle w-100 h-100 object-fit-cover">
+                    </div>
+                    <h2 class="fw-bold mb-1 fade-in-up" style="animation-delay: 0.2s;">Umar Abdullahi</h2>
+                    <p class="lead mb-2 opacity-90 fade-in-up" style="animation-delay: 0.3s;">Senior Secondary • Joined February 2025</p>
+
+                    <div class="d-flex justify-content-center gap-4 mt-4 flex-wrap">
+                        <button class="btn btn-light btn-lg px-4 fade-in-up" style="animation-delay: 0.4s;">
+                            <i class="bi bi-pencil me-2"></i> Edit Profile
+                        </button>
+                        <button class="btn btn-outline-light btn-lg px-4 fade-in-up" style="animation-delay: 0.5s;">
+                            <i class="bi bi-camera me-2"></i> Change Photo
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container py-5">
+
+                <!-- Stats Overview -->
+                <div class="row g-4 mb-5">
+                    <div class="col-6 col-md-3">
+                        <div class="card border-0 shadow-sm text-center p-4 fade-in-up">
+                            <div class="stat-circle mx-auto mb-3 bg-primary text-white">73%</div>
+                            <h5 class="fw-semibold mt-2">Overall Progress</h5>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="card border-0 shadow-sm text-center p-4 fade-in-up" style="animation-delay: 0.1s;">
+                            <div class="stat-circle mx-auto mb-3 bg-secondary text-white">248h</div>
+                            <h5 class="fw-semibold mt-2">Total Study Time</h5>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="card border-0 shadow-sm text-center p-4 fade-in-up" style="animation-delay: 0.2s;">
+                            <div class="stat-circle mx-auto mb-3 bg-accent text-white">142</div>
+                            <h5 class="fw-semibold mt-2">Assessments Passed</h5>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="card border-0 shadow-sm text-center p-4 fade-in-up" style="animation-delay: 0.3s;">
+                            <div class="stat-circle mx-auto mb-3 bg-warning text-white">12</div>
+                            <h5 class="fw-semibold mt-2">Day Streak</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Heatmap -->
+                <div class="card border-0 shadow-sm rounded-4 mb-5 fade-in-up" style="animation-delay: 0.4s;">
+                    <div class="card-header bg-transparent border-bottom">
+                        <h5 class="mb-0 fw-semibold">Activity This Year</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="activity-heat">
+                            <!-- Simple static heatmap demo (52 weeks × 7 days) -->
+                            <!-- In real app, generate dynamically based on study data -->
+                            <div class="heat-day heat-0"></div><div class="heat-day heat-1"></div><div class="heat-day heat-2"></div><div class="heat-day heat-3"></div><div class="heat-day heat-4"></div><div class="heat-day heat-2"></div><div class="heat-day heat-1"></div>
+                            <!-- ... repeat pattern for demo ... -->
+                            <!-- You would normally loop 365 divs here -->
+                        </div>
+                        <div class="d-flex justify-content-between mt-3 small text-muted">
+                            <span>Jan</span><span>Apr</span><span>Jul</span><span>Oct</span><span>Dec</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Completed Courses & Badges -->
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <div class="card border-0 shadow-sm rounded-4 fade-in-up" style="animation-delay: 0.5s;">
+                            <div class="card-header bg-transparent border-bottom">
+                                <h5 class="mb-0 fw-semibold">Completed Courses</h5>
+                            </div>
+                            <div class="list-group list-group-flush">
+                                <div class="list-group-item px-4 py-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>Mathematics – Quadratic Equations</strong>
+                                            <small class="d-block text-muted">Completed Feb 10, 2026</small>
+                                        </div>
+                                        <span class="badge bg-success">Certificate Earned</span>
+                                    </div>
+                                </div>
+                                <div class="list-group-item px-4 py-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>Basic Phone Repair – Module 1</strong>
+                                            <small class="d-block text-muted">Completed Jan 28, 2026</small>
+                                        </div>
+                                        <span class="badge bg-primary">92%</span>
+                                    </div>
+                                </div>
+                                <!-- More entries... -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="card border-0 shadow-sm rounded-4 h-100 fade-in-up" style="animation-delay: 0.6s;">
+                            <div class="card-header bg-transparent border-bottom">
+                                <h5 class="mb-0 fw-semibold">Achievements</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex flex-wrap gap-3">
+                                    <div class="badge-pill bg-warning text-dark"><i class="bi bi-trophy me-1"></i> 7-Day Streak</div>
+                                    <div class="badge-pill bg-success text-white"><i class="bi bi-star-fill me-1"></i> Math Master</div>
+                                    <div class="badge-pill bg-primary text-white"><i class="bi bi-lightning me-1"></i> Speed Learner</div>
+                                    <div class="badge-pill bg-info text-dark"><i class="bi bi-rocket-takeoff me-1"></i> First Vocational</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-4 text-center small bg-dark text-white-50">
+        <div class="container">
+            <p class="mb-2">© 2026 QualiLearn • Jos, Plateau State, Nigeria</p>
+            <div class="d-flex justify-content-center gap-4">
+                <a href="#" class="text-white-50 text-decoration-none">Contact</a>
+                <a href="#" class="text-white-50 text-decoration-none">Help</a>
+                <a href="#" class="text-white-50 text-decoration-none">Terms</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
