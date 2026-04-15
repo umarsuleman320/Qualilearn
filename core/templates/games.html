@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Brain Games & Refresh - QualiLearn">
+
+    <title>Brain Games • QualiLearn</title>
+
+    <!-- Bootstrap 5.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --light-bg: #f8fafc;
+            --card-bg: white;
+            --text: #1e293b;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--light-bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: white;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar {
+            background: white;
+            border-right: 1px solid var(--border);
+            width: 280px;
+        }
+
+        .nav-link {
+            color: #64748b;
+            padding: 0.8rem 1.5rem;
+            border-radius: 0.5rem;
+            margin: 0.2rem 1rem;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: var(--primary);
+            color: white !important;
+        }
+
+        .game-card {
+            border: none;
+            border-radius: 1.5rem;
+            background: white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .game-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .game-icon-wrapper {
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            background: #f1f5f9;
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.7s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn-play {
+            border-radius: 1rem;
+            padding: 0.75rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-top px-4">
+        <a class="navbar-brand fw-bold text-primary fs-3" href="{% url 'dashboard' %}">
+            <i class="bi bi-rocket-takeoff-fill me-2"></i>QualiLearn
+        </a>
+        <div class="ms-auto">
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary rounded-pill px-4">Back to Dashboard</a>
+        </div>
+    </nav>
+
+    <div class="d-flex flex-grow-1">
+        <!-- Sidebar (Desktop) -->
+        <aside class="sidebar d-none d-lg-block pt-4">
+            <nav class="nav flex-column">
+                <a class="nav-link" href="{% url 'dashboard' %}"><i class="bi bi-house-door me-2"></i> Dashboard</a>
+                <a class="nav-link" href="{% url 'learning' %}"><i class="bi bi-book me-2"></i> Subjects</a>
+                <a class="nav-link" href="{% url 'assessment' %}"><i class="bi bi-question-octagon me-2"></i> Assessments</a>
+                <a class="nav-link active" href="{% url 'games' %}"><i class="bi bi-joystick me-2"></i> Games</a>
+                <a class="nav-link" href="{% url 'vocational' %}"><i class="bi bi-tools me-2"></i> Vocational</a>
+                <a class="nav-link" href="{% url 'chat' %}"><i class="bi bi-robot me-2"></i> AI Support</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-grow-1 bg-light">
+            <div class="container-fluid py-5 px-4 px-lg-5">
+                
+                <div class="mb-5 fade-in-up">
+                    <h1 class="fw-bold display-5 mb-2">Brain Refresh Hub</h1>
+                    <p class="text-muted lead">Choose a game to sharpen your mind or simply relax between studies.</p>
+                </div>
+
+                <div class="row g-4">
+                    <!-- 1. 2048 -->
+                    <div class="col-sm-6 col-md-4 col-lg-3 fade-in-up" style="animation-delay: 0.1s;">
+                        <div class="game-card">
+                            <div class="game-icon-wrapper text-primary"><i class="bi bi-grid-3x3-gap-fill"></i></div>
+                            <div class="p-4 flex-grow-1 d-flex flex-column">
+                                <h5 class="fw-bold">2048 Puzzle</h5>
+                                <p class="text-muted small">Master the art of merging numbers in this addictive logic grid.</p>
+                                <a href="https://play2048.co/" target="_blank" class="mt-auto btn btn-primary btn-play">Play Now</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Sudoku -->
+                    <div class="col-sm-6 col-md-4 col-lg-3 fade-in-up" style="animation-delay: 0.15s;">
+                        <div class="game-card">
+                            <div class="game-icon-wrapper text-success"><i class="bi bi-123"></i></div>
+                            <div class="p-4 flex-grow-1 d-flex flex-column">
+                                <h5 class="fw-bold">Daily Sudoku</h5>
+                                <p class="text-muted small">Classic logic-based number placement puzzle.</p>
+                                <a href="https://www.sudoku.game/" target="_blank" class="mt-auto btn btn-success btn-play">Play Now</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Crossword -->
+                    <div class="col-sm-6 col-md-4 col-lg-3 fade-in-up" style="animation-delay: 0.2s;">
+                        <div class="game-card">
+                            <div class="game-icon-wrapper text-warning"><i class="bi bi-alphabet-uppercase"></i></div>
+                            <div class="p-4 flex-grow-1 d-flex flex-column">
+                                <h5 class="fw-bold">Crosswords</h5>
+                                <p class="text-muted small">Daily crossword puzzles to boost your vocabulary.</p>
+                                <a href="https://www.boatloadpuzzles.com/playcrossword" target="_blank" class="mt-auto btn btn-warning text-white btn-play">Play Now</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. Quick Draw -->
+                    <div class="col-sm-6 col-md-4 col-lg-3 fade-in-up" style="animation-delay: 0.25s;">
+                        <div class="game-card">
+                            <div class="game-icon-wrapper text-danger"><i class="bi bi-palette-fill"></i></div>
+                            <div class="p-4 flex-grow-1 d-flex flex-column">
+                                <h5 class="fw-bold">Quick, Draw!</h5>
+                                <p class="text-muted small">Can an AI recognize your doodles? Test your speed!</p>
+                                <a href="https://quickdraw.withgoogle.com/" target="_blank" class="mt-auto btn btn-danger btn-play">Play Now</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5. Chess -->
+                    <div class="col-sm-6 col-md-4 col-lg-3 fade-in-up" style="animation-delay: 0.3s;">
+                        <div class="game-card">
+                            <div class="game-icon-wrapper text-secondary"><i class="bi bi-trophy-fill"></i></div>
+                            <div class="p-4 flex-grow-1 d-flex flex-column">
+                                <h5 class="fw-bold">Lichess Chess</h5>
+                                <p class="text-muted small">Challenge the world or the computer in the game of kings.</p>
+                                <a href="https://lichess.org/" target="_blank" class="mt-auto btn btn-secondary btn-play">Play Now</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 6. City Guesser -->
+                    <div class="col-sm-6 col-md-4 col-lg-3 fade-in-up" style="animation-delay: 0.35s;">
+                        <div class="game-card">
+                            <div class="game-icon-wrapper text-info"><i class="bi bi-globe-americas"></i></div>
+                            <div class="p-4 flex-grow-1 d-flex flex-column">
+                                <h5 class="fw-bold">City Guesser</h5>
+                                <p class="text-muted small">Travel the world visually and guess your location.</p>
+                                <a href="https://cityguesser.com/" target="_blank" class="mt-auto btn btn-info text-white btn-play">Play Now</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 7. Tetris -->
+                    <div class="col-sm-6 col-md-4 col-lg-3 fade-in-up" style="animation-delay: 0.4s;">
+                        <div class="game-card">
+                            <div class="game-icon-wrapper text-dark"><i class="bi bi-bricks"></i></div>
+                            <div class="p-4 flex-grow-1 d-flex flex-column">
+                                <h5 class="fw-bold">Classic Tetris</h5>
+                                <p class="text-muted small">The legendary tile-matching spatial puzzle.</p>
+                                <a href="https://tetris.com/play-tetris" target="_blank" class="mt-auto btn btn-dark btn-play">Play Now</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 8. Wordle -->
+                    <div class="col-sm-6 col-md-4 col-lg-3 fade-in-up" style="animation-delay: 0.45s;">
+                        <div class="game-card">
+                            <div class="game-icon-wrapper text-success-emphasis"><i class="bi bi-spellcheck"></i></div>
+                            <div class="p-4 flex-grow-1 d-flex flex-column">
+                                <h5 class="fw-bold">Wordle</h5>
+                                <p class="text-muted small">Find the secret 5-letter word in six tries.</p>
+                                <a href="https://www.nytimes.com/games/wordle" target="_blank" class="mt-auto btn btn-success btn-play">Play Now</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 9. Snake -->
+                    <div class="col-sm-6 col-md-4 col-lg-3 fade-in-up" style="animation-delay: 0.5s;">
+                        <div class="game-card">
+                            <div class="game-icon-wrapper" style="color: #65a30d;"><i class="bi bi-bug-fill"></i></div>
+                            <div class="p-4 flex-grow-1 d-flex flex-column">
+                                <h5 class="fw-bold">Snake Game</h5>
+                                <p class="text-muted small">Classic arena snake — grow as big as possible!</p>
+                                <a href="https://playsnake.org/" target="_blank" class="mt-auto btn btn-play" style="background:#65a30d; color: white;">Play Now</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 10. Racing (Moto X3M) -->
+                    <div class="col-sm-6 col-md-4 col-lg-3 fade-in-up" style="animation-delay: 0.55s;">
+                        <div class="game-card">
+                            <div class="game-icon-wrapper" style="color: #ea580c;"><i class="bi bi-lightning-charge-fill"></i></div>
+                            <div class="p-4 flex-grow-1 d-flex flex-column">
+                                <h5 class="fw-bold">Moto X3M Racing</h5>
+                                <p class="text-muted small">High-speed motorcycle stunts and racing challenges.</p>
+                                <a href="https://www.coolmathgames.com/0-moto-x3m" target="_blank" class="mt-auto btn btn-play" style="background:#ea580c; color: white;">Play Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-5 pt-4 text-center fade-in-up">
+                    <p class="text-muted"><i class="bi bi-info-circle me-1"></i> These games are provided by external partners and do not require registration.</p>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-4 text-center bg-dark text-white-50">
+        <div class="container small">
+            <p class="mb-0">© 2026 QualiLearn • Mindful Learning & Leisure Hub</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

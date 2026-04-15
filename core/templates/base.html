@@ -1,6 +1,24 @@
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="light">
 <head>
+    <script>
+        (function() {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', theme);
+            if(localStorage.getItem('highContrast') === 'true') {
+                document.documentElement.classList.add('high-contrast');
+            }
+            const fs = localStorage.getItem('fontSize');
+            if(fs === 'Small') document.documentElement.style.fontSize = '14px';
+            else if(fs === 'Large') document.documentElement.style.fontSize = '18px';
+            else document.documentElement.style.fontSize = '16px';
+        })();
+    </script>
+    <style>
+        .high-contrast { filter: contrast(125%); }
+        .high-contrast * { border-color: #000 !important; color: #000 !important; }
+        html[data-bs-theme="dark"].high-contrast * { border-color: #fff !important; color: #fff !important; }
+    </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="QualiLearn - Academic and Vocational Learning Platform">
@@ -150,14 +168,18 @@
                             <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold" style="width:40px; height:40px;">
                                 U
                             </div>
-                            <span class="d-none d-md-inline fw-medium">Umar</span>
+                            <span class="d-none d-md-inline fw-medium">{{ request.user.first_name|default:"User" }}</span>
                         </div>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i> Profile</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i> Settings</a></li>
+                        {% if user.is_staff %}
+                        <li><a class="dropdown-item text-primary fw-bold" href="/admin/"><i class="bi bi-shield-lock me-2"></i> Admin Panel</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
+                        {% endif %}
+                        <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="bi bi-person me-2"></i> Profile</a></li>
+                        <li><a class="dropdown-item" href="{% url 'settings' %}"><i class="bi bi-gear me-2"></i> Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
                     </ul>
                 </div>
             </div>
@@ -178,18 +200,18 @@
             <div class="offcanvas-body p-0">
                 <div class="sidebar d-flex flex-column h-100">
                     <ul class="nav flex-column pt-3">
-                        <li class="nav-item"><a class="nav-link active" href="#"><i class="bi bi-house-door-fill me-2"></i> Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-journal-bookmark-fill me-2"></i> Subjects</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-question-circle-fill me-2"></i> Past Questions</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-tools me-2"></i> Vocational</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-collection-play me-2"></i> Flashcards</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-joystick me-2"></i> Games</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-robot me-2"></i> AI Support</a></li>
-                        <li class="nav-item mt-4"><a class="nav-link" href="#"><i class="bi bi-person-circle me-2"></i> Profile</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-gear-wide me-2"></i> Settings</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="{% url 'dashboard' %}"><i class="bi bi-house-door-fill me-2"></i> Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'learning' %}"><i class="bi bi-journal-bookmark-fill me-2"></i> Subjects</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'assessment' %}"><i class="bi bi-question-circle-fill me-2"></i> Past Questions</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'vocational' %}"><i class="bi bi-tools me-2"></i> Vocational</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'flashcard' %}"><i class="bi bi-collection-play me-2"></i> Flashcards</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'games' %}"><i class="bi bi-joystick me-2"></i> Games</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'chat' %}"><i class="bi bi-robot me-2"></i> AI Support</a></li>
+                        <li class="nav-item mt-4"><a class="nav-link" href="{% url 'profile' %}"><i class="bi bi-person-circle me-2"></i> Profile</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'settings' %}"><i class="bi bi-gear-wide me-2"></i> Settings</a></li>
                     </ul>
                     <div class="mt-auto p-3 border-top">
-                        <a class="nav-link text-danger" href="#"><i class="bi bi-box-arrow-right me-2"></i> Logout</a>
+                        <a class="nav-link text-danger" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i> Logout</a>
                     </div>
                 </div>
             </div>

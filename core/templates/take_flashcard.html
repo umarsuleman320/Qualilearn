@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Flashcards • QualiLearn</title>
+
+    <!-- Bootstrap 5.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+            --card-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+            --glass: rgba(255, 255, 255, 0.7);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-gradient);
+            color: #1e293b;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .top-nav {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .progress-container {
+            height: 6px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 3px;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            width: 0%;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .review-header {
+            padding: 4rem 0 2rem;
+        }
+
+        .flashcard-wrapper {
+            perspective: 2000px;
+            height: 480px;
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .flashcard {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .card-front {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            color: #0f172a;
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        .badge-modern {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 2rem;
+        }
+
+        .card-back .badge-modern {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .content-text {
+            font-size: 2.25rem;
+            font-weight: 600;
+            line-height: 1.4;
+            max-width: 100%;
+        }
+
+        .nav-controls {
+            margin-top: 4rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .btn-nav {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: white;
+            border: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            color: var(--primary);
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-nav:hover:not(:disabled) {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-nav:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .counter-pill {
+            background: var(--primary);
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 3rem;
+            font-weight: 700;
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.2);
+        }
+
+        .shortcut-hint {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #64748b;
+            font-size: 0.85rem;
+            background: rgba(255,255,255,0.5);
+            padding: 0.5rem 1.5rem;
+            border-radius: 1rem;
+            backdrop-filter: blur(4px);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation with Progress -->
+    <nav class="top-nav">
+        <div class="container py-3 d-flex align-items-center justify-content-between">
+            <a href="{% url 'flashcard' %}" class="btn btn-sm btn-light rounded-pill px-3">
+                <i class="bi bi-x-lg me-2"></i> End Session
+            </a>
+            <div class="fw-bold text-primary">{{ subject_name }}</div>
+            <div style="width: 100px;"></div> <!-- Spacer -->
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar-fill" id="progressBar"></div>
+        </div>
+    </nav>
+
+    <div class="container d-flex flex-column align-items-center">
+        
+        <div class="review-header text-center">
+            <h1 class="display-6 fw-bold mb-2">Mastering Content</h1>
+            <p class="text-muted">Tap the card to reveal the secret</p>
+        </div>
+
+        <!-- Flashcard Wrapper -->
+        <div class="flashcard-wrapper fade-in" id="cardContainer">
+            <div class="flashcard" id="card">
+                <!-- Front -->
+                <div class="card-face card-front">
+                    <div class="badge-modern">Definition / Term</div>
+                    <div class="content-text" id="frontContent">---</div>
+                </div>
+                <!-- Back -->
+                <div class="card-face card-back">
+                    <div class="badge-modern">The Answer</div>
+                    <div class="content-text" id="backContent">---</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-controls">
+            <button class="btn-nav" id="prevBtn" title="Previous (Left Arrow)">
+                <i class="bi bi-arrow-left-short"></i>
+            </button>
+            
+            <div class="counter-pill">
+                <span id="currentIndex">1</span> / <span id="totalCards">0</span>
+            </div>
+
+            <button class="btn-nav" id="nextBtn" title="Next (Right Arrow)">
+                <i class="bi bi-arrow-right-short"></i>
+            </button>
+        </div>
+
+    </div>
+
+    <div class="shortcut-hint d-none d-md-block">
+        <span class="badge bg-light text-dark border me-1">Space</span> to Flip • 
+        <span class="badge bg-light text-dark border mx-1">←</span> <span class="badge bg-light text-dark border me-1">→</span> to Navigate
+    </div>
+
+    <script>
+        const flashcards = {{ flashcards_json|safe }};
+        let currentIndex = 0;
+
+        const card = document.getElementById('card');
+        const cardContainer = document.getElementById('cardContainer');
+        const frontText = document.getElementById('frontContent');
+        const backText = document.getElementById('backContent');
+        const indexDisplay = document.getElementById('currentIndex');
+        const totalDisplay = document.getElementById('totalCards');
+        const progressBar = document.getElementById('progressBar');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function updateCard(direction = '') {
+            if (flashcards.length === 0) return;
+
+            // Trigger animation
+            if (direction) {
+                cardContainer.style.transition = 'none';
+                cardContainer.style.transform = `translateX(${direction === 'next' ? '20px' : '-20px'})`;
+                cardContainer.style.opacity = '0';
+                
+                setTimeout(() => {
+                    cardContainer.style.transition = 'all 0.4s ease';
+                    cardContainer.style.transform = 'translateX(0)';
+                    cardContainer.style.opacity = '1';
+                }, 10);
+            }
+
+            const current = flashcards[currentIndex];
+            frontText.textContent = current.front;
+            backText.textContent = current.back;
+            indexDisplay.textContent = currentIndex + 1;
+            totalDisplay.textContent = flashcards.length;
+
+            // Progress Bar
+            const progress = ((currentIndex + 1) / flashcards.length) * 100;
+            progressBar.style.width = `${progress}%`;
+
+            // Button States
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex === flashcards.length - 1;
+
+            // Reset flip state
+            card.classList.remove('flipped');
+        }
+
+        // Click to Flip
+        card.addEventListener('click', () => {
+            card.classList.toggle('flipped');
+        });
+
+        // Navigation
+        prevBtn.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateCard('prev');
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentIndex < flashcards.length - 1) {
+                currentIndex++;
+                updateCard('next');
+            }
+        });
+
+        // Keyboard Shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                card.classList.toggle('flipped');
+            } else if (e.code === 'ArrowLeft' && currentIndex > 0) {
+                currentIndex--;
+                updateCard('prev');
+            } else if (e.code === 'ArrowRight' && currentIndex < flashcards.length - 1) {
+                currentIndex++;
+                updateCard('next');
+            }
+        });
+
+        // Initialize
+        updateCard();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

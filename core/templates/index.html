@@ -1,6 +1,24 @@
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="light">
 <head>
+    <script>
+        (function() {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', theme);
+            if(localStorage.getItem('highContrast') === 'true') {
+                document.documentElement.classList.add('high-contrast');
+            }
+            const fs = localStorage.getItem('fontSize');
+            if(fs === 'Small') document.documentElement.style.fontSize = '14px';
+            else if(fs === 'Large') document.documentElement.style.fontSize = '18px';
+            else document.documentElement.style.fontSize = '16px';
+        })();
+    </script>
+    <style>
+        .high-contrast { filter: contrast(125%); }
+        .high-contrast * { border-color: #000 !important; color: #000 !important; }
+        html[data-bs-theme="dark"].high-contrast * { border-color: #fff !important; color: #fff !important; }
+    </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="QualiLearn – Smart learning for Primary, Secondary, University and Vocational skills in English, Hausa, Yoruba, Arabic & French">
@@ -128,7 +146,7 @@
     <!-- ─── NAVBAR (public version) ──────────────────────────────────────── -->
     <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container-fluid px-4 px-lg-5">
-            <a class="navbar-brand fw-bold fs-3 d-flex align-items-center" href="index.html">
+            <a class="navbar-brand fw-bold fs-3 d-flex align-items-center" href="{% url 'home' %}">
                 <i class="bi bi-rocket-takeoff-fill me-2 text-white" style="color: var(--primary);"></i>
                 QualiLearn
             </a>
@@ -139,15 +157,14 @@
 
             <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
                 <ul class="navbar-nav gap-3 gap-lg-4 align-items-center">
-                    <li class="nav-item"><a class="nav-link fw-medium" href="login.html">For Schools</a></li>
                     <li class="nav-item"><a class="nav-link fw-medium" href="#features">Features</a></li>
-                    <li class="nav-item"><a class="nav-link fw-medium" href="login.html">Vocational</a></li>
+                    <li class="nav-item"><a class="nav-link fw-medium" href="{% url 'login' %}">Vocational</a></li>
                     <li class="nav-item"><a class="nav-link fw-medium" href="#">About</a></li>
                     <li class="nav-item ms-lg-3">
-                        <a class="btn btn-hero px-4" href="login.html">Login</a>
+                        <a class="btn btn-hero px-4" href="{% url 'login' %}">Log In</a>
                     </li>
                     <li class="nav-item">
-                        <a class="btn btn-outline-hero" href="login.html">Get Started Free</a>
+                        <a class="btn btn-outline-hero" href="{% url 'register' %}">Register Now</a>
                     </li>
                 </ul>
             </div>
@@ -167,7 +184,7 @@
                     </p>
 
                     <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center fade-in-up" style="animation-delay: 0.5s;">
-                        <a href="login.html" class="btn btn-hero btn-lg px-5">Start Learning Now</a>
+                        <a href="{% url 'login' %}" class="btn btn-hero btn-lg px-5">Start Learning Now</a>
                         <a href="#features" class="btn btn-outline-hero btn-lg px-5">See Features</a>
                     </div>
 
@@ -272,8 +289,8 @@
             <p class="lead fs-4 mb-5 opacity-90 col-lg-8 mx-auto">
                 Join thousands of students already improving with QualiLearn — free to start, no credit card required.
             </p>
-            <a href="login.html" class="btn btn-hero btn-lg px-5 py-3 fs-4">Create Free Account</a>
-            <p class="mt-4 small opacity-75">or <a href="login.html" class="text-white text-decoration-underline">login if you already have an account</a></p>
+            <a href="{% url 'login' %}" class="btn btn-hero btn-lg px-5 py-3 fs-4">Create Free Account</a>
+            <p class="mt-4 small opacity-75">or <a href="{% url 'login' %}" class="text-white text-decoration-underline">login if you already have an account</a></p>
         </div>
     </section>
 
@@ -282,9 +299,9 @@
         <div class="container">
             <p class="mb-3">© 2026 QualiLearn • Made for Nigerian learners</p>
             <div class="d-flex justify-content-center gap-4 mb-3">
-                <a href="#" class="text-white-50 text-decoration-none">Home</a>
+                <a href="{% url 'home' %}" class="text-white-50 text-decoration-none">Home</a>
                 <a href="#" class="text-white-50 text-decoration-none">Features</a>
-                <a href="#" class="text-white-50 text-decoration-none">Vocational</a>
+                <a href="{% url 'vocational' %}" class="text-white-50 text-decoration-none">Vocational</a>
                 <a href="#" class="text-white-50 text-decoration-none">Contact</a>
                 <a href="#" class="text-white-50 text-decoration-none">Help</a>
             </div>

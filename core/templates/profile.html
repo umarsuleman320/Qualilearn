@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="User Profile & Progress - QualiLearn">
+
+    <title>Profile • {{ profile.user.username }} • QualiLearn</title>
+
+    <!-- Bootstrap 5.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --accent: #ec4899;
+            --light-bg: #f8fafc;
+            --card-bg: white;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--light-bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .navbar, .sidebar {
+            background: white;
+            border-color: var(--border);
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.5rem;
+            margin: 0.25rem 0.75rem;
+            transition: all 0.25s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: var(--primary);
+            color: white !important;
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 4rem 0 6rem;
+            position: relative;
+        }
+
+        .profile-avatar {
+            width: 140px;
+            height: 140px;
+            border: 6px solid white;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            object-fit: cover;
+        }
+
+        .stat-circle {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.7s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-top shadow-sm">
+        <div class="container-fluid px-3 px-md-4">
+            <a class="navbar-brand fw-bold fs-4" href="{% url 'dashboard' %}">QualiLearn</a>
+            
+            <div class="ms-auto dropdown">
+                <button class="btn btn-link p-0" type="button" data-bs-toggle="dropdown">
+                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold" style="width:40px;height:40px;">
+                        {{ profile.user.username|slice:":1"|upper }}
+                    </div>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow">
+                    <li><a class="dropdown-item" href="{% url 'settings' %}">Settings</a></li>
+                    <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="d-flex flex-grow-1">
+        <!-- Sidebar -->
+        <div class="d-none d-lg-block">
+            <div class="sidebar d-flex flex-column h-100" style="width: 260px; border-right: 1px solid var(--border);">
+                <ul class="nav flex-column pt-3">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}"><i class="bi bi-house-door me-2"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'learning' %}"><i class="bi bi-book me-2"></i> Subjects</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'assessment' %}"><i class="bi bi-question-octagon me-2"></i> Assessments</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'vocational' %}"><i class="bi bi-tools me-2"></i> Vocational</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="{% url 'profile' %}"><i class="bi bi-person me-2"></i> Profile</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="flex-grow-1">
+            <div class="profile-header text-center position-relative">
+                <div class="container">
+                    <img src="{% if profile.profile_picture %}{{ profile.profile_picture.url }}{% else %}https://ui-avatars.com/api/?name={{ profile.user.username }}&background=ffffff&color=6366f1&size=140{% endif %}" 
+                         alt="{{ profile.user.username }}" class="profile-avatar rounded-circle mb-3 fade-in-up">
+                    <h2 class="fw-bold mb-1 fade-in-up">{{ profile.user.first_name }} {{ profile.user.last_name|default:profile.user.username }}</h2>
+                    <p class="lead opacity-90 fade-in-up">Active Student • Since {{ profile.user.date_joined|date:"M Y" }}</p>
+
+                    <div class="d-flex justify-content-center gap-3 mt-4 fade-in-up">
+                        <a href="{% url 'settings' %}" class="btn btn-light px-4"><i class="bi bi-pencil me-2"></i> Edit Profile</a>
+                        <form method="POST" enctype="multipart/form-data" class="d-inline">
+                            {% csrf_token %}
+                            <input type="file" name="profile_picture" id="photoInput" class="d-none" onchange="this.form.submit()">
+                            <button type="button" class="btn btn-outline-light px-4" onclick="document.getElementById('photoInput').click()">
+                                <i class="bi bi-camera me-2"></i> Change Photo
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container py-5">
+                <!-- Stats -->
+                <div class="row g-4 mb-5">
+                    <div class="col-6 col-md-3">
+                        <div class="card border-0 shadow-sm text-center p-4 fade-in-up">
+                            <div class="stat-circle mx-auto mb-3 bg-primary text-white">{{ overall_progress }}%</div>
+                            <h6 class="fw-bold text-muted">Overall Progress</h6>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="card border-0 shadow-sm text-center p-4 fade-in-up" style="animation-delay: 0.1s;">
+                            <div class="stat-circle mx-auto mb-3 bg-secondary text-white">{{ total_study_hours }}h</div>
+                            <h6 class="fw-bold text-muted">Study Hours</h6>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="card border-0 shadow-sm text-center p-4 fade-in-up" style="animation-delay: 0.2s;">
+                            <div class="stat-circle mx-auto mb-3 bg-info text-white">{{ assessments_passed }}</div>
+                            <h6 class="fw-bold text-muted">Tests Passed</h6>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="card border-0 shadow-sm text-center p-4 fade-in-up" style="animation-delay: 0.3s;">
+                            <div class="stat-circle mx-auto mb-3 bg-warning text-white text-dark">{{ profile.streak_count }}</div>
+                            <h6 class="fw-bold text-muted">Day Streak</h6>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Completed Courses -->
+                <div class="card border-0 shadow-sm rounded-4 fade-in-up" style="animation-delay: 0.4s;">
+                    <div class="card-header bg-transparent py-3 border-bottom">
+                        <h5 class="mb-0 fw-bold">Completed Subjects</h5>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        {% for p in completed_courses %}
+                        <div class="list-group-item px-4 py-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1 fw-bold">{{ p.subject.name }}</h6>
+                                    <small class="text-muted">Completed on {{ p.last_attempt|date:"d M Y" }}</small>
+                                </div>
+                                <span class="badge bg-success-subtle text-success border border-success px-3 py-2">CERTIFIED</span>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="list-group-item px-4 py-5 text-center text-muted">
+                            <i class="bi bi-journal-check fs-1 d-block mb-3 opacity-25"></i>
+                            No subjects completed yet. Start your first assessment today!
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="mt-auto py-4 text-center small bg-dark text-white-50">
+        <div class="container">
+            <p class="mb-0">© 2026 QualiLearn • Zaria, Kaduna State, Nigeria</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
