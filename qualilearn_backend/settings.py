@@ -190,4 +190,4 @@ REST_FRAMEWORK = {
 CORS_ALLOW_ALL_ORIGINS = True
 
 # Gemini AI Configuration
-GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', 'AIzaSyC2QLTEUpIMXjSBhuzgqWWdqxVUR972dnI')
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')

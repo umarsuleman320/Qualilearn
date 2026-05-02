@@ -23,8 +23,8 @@ def ai_chat(request):
         try:
             # Configure Gemini
             api_key = django_settings.GEMINI_API_KEY
-            if not api_key or api_key == "YOUR_GEMINI_API_KEY_HERE":
-                return JsonResponse({'reply': "Hi! I'm ready to help, but the GEMINI_API_KEY needs to be added in settings.py first!"})
+            if not api_key:
+                return JsonResponse({'reply': "Hi! The AI is ready, but you need to add the 'GEMINI_API_KEY' to your Render Environment variables first!"})
 
             genai.configure(api_key=api_key)
             
@@ -111,9 +111,7 @@ Remember: RESPOND ONLY IN {lang_full}."""
         except Exception as e:
             print("Gemini Error:", str(e))
             error_msg = str(e)
-            if '429' in error_msg or 'quota' in error_msg.lower():
-                return JsonResponse({'reply': "The AI is taking a short break due to high usage. Please wait a moment and try again!"})
-            return JsonResponse({'reply': "Sorry, the AI encountered an issue. Please try again in a few seconds."})
+            return JsonResponse({'reply': f"AI Error Detail: {error_msg}"})
 
         finally:
             # Increment study time for AI Chat interaction
