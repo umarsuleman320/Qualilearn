@@ -28,28 +28,6 @@ def ai_chat(request):
 
             genai.configure(api_key=api_key)
             
-            # Try multiple model names for best compatibility
-            model_names = [
-                'gemini-2.0-flash', 
-                'gemini-1.5-flash', 
-                'gemini-1.5-flash-latest', 
-                'gemini-pro'
-            ]
-            model = None
-            last_error = None
-            
-            for name in model_names:
-                try:
-                    model = genai.GenerativeModel(name)
-                    # Test if the model actually exists by doing a dummy call or just setting it
-                    break
-                except Exception as e:
-                    last_error = e
-                    continue
-            
-            if not model:
-                return JsonResponse({'reply': f"AI Error: Could not initialize model. Details: {str(last_error)}"})
-
             # Support both JSON and multipart/form-data (for file uploads)
             if request.content_type and 'multipart/form-data' in request.content_type:
                 user_message = request.POST.get('message', '')
@@ -103,9 +81,30 @@ Remember: RESPOND ONLY IN {lang_full}."""
                         {"mime_type": "application/pdf", "data": file_bytes}
                     ]
 
-            response = model.generate_content(content_parts)
-            ai_reply = response.text
+            # Try multiple model names for best compatibility
+            model_names = [
+                'gemini-1.5-flash', 
+                'gemini-1.5-pro', 
+                'gemini-2.0-flash', 
+                'gemini-pro'
+            ]
+            
+            last_error = None
+            response = None
+            
+            for name in model_names:
+                try:
+                    model = genai.GenerativeModel(name)
+                    response = model.generate_content(content_parts)
+                    break # Success!
+                except Exception as e:
+                    last_error = e
+                    continue
+            
+            if not response:
+                return JsonResponse({'reply': f"AI Error: All models failed. Last Error: {str(last_error)}"})
 
+            ai_reply = response.text
             return JsonResponse({'reply': ai_reply})
 
         except Exception as e:
