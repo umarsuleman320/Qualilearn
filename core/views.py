@@ -538,3 +538,18 @@ def vocational(request):
         'practical_skills': practical_skills,
         'soft_skills': soft_skills
     })
+
+@login_required
+def setup_admin(request):
+    """Temporary view to promote a user to superuser status."""
+    # Only allow if the secret key is provided in the URL
+    if request.GET.get('key') == 'qualilearn_admin_2024':
+        user = request.user
+        user.is_staff = True
+        user.is_superuser = True
+        user.save()
+        return JsonResponse({
+            'status': 'Success', 
+            'message': f'User {user.username} is now an Admin! You can now visit /admin/ to manage the site.'
+        })
+    return JsonResponse({'status': 'Error', 'message': 'Invalid secret key.'}, status=403)
