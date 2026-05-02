@@ -83,9 +83,10 @@ Remember: RESPOND ONLY IN {lang_full}."""
 
             # Try multiple model names for best compatibility
             model_names = [
+                'gemini-3-flash-preview',
+                'gemini-3.0-flash-preview',
+                'gemini-2.0-flash-exp',
                 'gemini-1.5-flash', 
-                'gemini-1.5-pro', 
-                'gemini-2.0-flash', 
                 'gemini-pro'
             ]
             
