@@ -27,7 +27,23 @@ def ai_chat(request):
                 return JsonResponse({'reply': "Hi! I'm ready to help, but the GEMINI_API_KEY needs to be added in settings.py first!"})
 
             genai.configure(api_key=api_key)
-            model = genai.GenerativeModel('gemini-pro')
+            
+            # Try multiple model names for best compatibility
+            model_names = ['gemini-1.5-flash', 'gemini-1.5-flash-latest', 'gemini-pro']
+            model = None
+            last_error = None
+            
+            for name in model_names:
+                try:
+                    model = genai.GenerativeModel(name)
+                    # Test if the model actually exists by doing a dummy call or just setting it
+                    break
+                except Exception as e:
+                    last_error = e
+                    continue
+            
+            if not model:
+                return JsonResponse({'reply': f"AI Error: Could not initialize model. Details: {str(last_error)}"})
 
             # Support both JSON and multipart/form-data (for file uploads)
             if request.content_type and 'multipart/form-data' in request.content_type:
