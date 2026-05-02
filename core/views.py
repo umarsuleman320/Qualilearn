@@ -29,7 +29,12 @@ def ai_chat(request):
             genai.configure(api_key=api_key)
             
             # Try multiple model names for best compatibility
-            model_names = ['gemini-1.5-flash', 'gemini-1.5-flash-latest', 'gemini-pro']
+            model_names = [
+                'gemini-2.0-flash', 
+                'gemini-1.5-flash', 
+                'gemini-1.5-flash-latest', 
+                'gemini-pro'
+            ]
             model = None
             last_error = None
             
