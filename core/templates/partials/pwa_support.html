@@ -1,0 +1,16 @@
+<!-- PWA Support -->
+<link rel="manifest" href="/static/manifest.json">
+<meta name="theme-color" content="#6366f1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="/static/icons/icon-512.png">
+
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/static/service-worker.js')
+                .then(reg => console.log('PWA Ready'))
+                .catch(err => console.log('PWA Fail', err));
+        });
+    }
+</script>
