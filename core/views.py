@@ -23,11 +23,11 @@ def ai_chat(request):
         try:
             # Configure Gemini
             api_key = django_settings.GEMINI_API_KEY
-            if api_key == "YOUR_GEMINI_API_KEY_HERE" or not api_key:
+            if not api_key or api_key == "YOUR_GEMINI_API_KEY_HERE":
                 return JsonResponse({'reply': "Hi! I'm ready to help, but the GEMINI_API_KEY needs to be added in settings.py first!"})
 
             genai.configure(api_key=api_key)
-            model = genai.GenerativeModel('gemini-1.5-flash')
+            model = genai.GenerativeModel('gemini-pro')
 
             # Support both JSON and multipart/form-data (for file uploads)
             if request.content_type and 'multipart/form-data' in request.content_type:
