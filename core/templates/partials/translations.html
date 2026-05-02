@@ -1,0 +1,38 @@
+<div id="google_translate_element" style="display:none"></div>
+<script type="text/javascript">
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'en',
+            includedLanguages: 'en,ar,ha,yo,ig,fr',
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+            autoDisplay: false
+        }, 'google_translate_element');
+    }
+
+    function selectLanguage(langCode) {
+        // Set the Google Translate cookie
+        // The value MUST be in the format /source/target
+        const value = "/en/" + langCode;
+        
+        // Set cookie for current path and root path
+        document.cookie = "googtrans=" + value + "; path=/";
+        
+        // Also set for domain to ensure it persists across subpaths
+        const domain = window.location.hostname;
+        document.cookie = "googtrans=" + value + "; path=/; domain=" + domain;
+        
+        // Save to localStorage so UI can update code immediately
+        localStorage.setItem('selectedLanguage', langCode);
+        
+        // Refresh is required for Google Translate to pick up the cookie change
+        window.location.reload();
+    }
+
+    // Initialize UI on load
+    window.addEventListener('load', function() {
+        const savedLang = localStorage.getItem('selectedLanguage') || 'en';
+        const el = document.getElementById('activeLangCode');
+        if (el) el.textContent = savedLang.toUpperCase();
+    });
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>

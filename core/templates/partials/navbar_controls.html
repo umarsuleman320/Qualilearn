@@ -1,0 +1,71 @@
+<!-- Modern Theme and Language Controls -->
+<div class="d-flex gap-2 align-items-center me-2">
+    <!-- Theme Toggle -->
+    <button class="theme-toggle-btn" id="themeToggle" title="Toggle Theme">
+        <i class="bi bi-moon-stars-fill d-none-dark"></i>
+        <i class="bi bi-sun-fill d-none-light"></i>
+    </button>
+
+    <!-- Language Dropdown -->
+    <div class="dropdown">
+        <button class="lang-toggle-btn" type="button" data-bs-toggle="dropdown">
+            <i class="bi bi-translate fs-5"></i>
+            <span id="activeLangCode" class="d-none d-md-inline">EN</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2">
+            <li><a class="dropdown-item rounded-2 mb-1" href="#" onclick="selectLanguage('en')">EN - English</a></li>
+            <li><a class="dropdown-item rounded-2 mb-1" href="#" onclick="selectLanguage('ar')">AR - Arabic</a></li>
+            <li><a class="dropdown-item rounded-2 mb-1" href="#" onclick="selectLanguage('ha')">HA - Hausa</a></li>
+            <li><a class="dropdown-item rounded-2 mb-1" href="#" onclick="selectLanguage('yo')">YO - Yoruba</a></li>
+            <li><a class="dropdown-item rounded-2 mb-1" href="#" onclick="selectLanguage('ig')">IG - Igbo</a></li>
+            <li><a class="dropdown-item rounded-2" href="#" onclick="selectLanguage('fr')">FR - French</a></li>
+        </ul>
+    </div>
+</div>
+
+<style>
+    .theme-toggle-btn { background: var(--bs-tertiary-bg); border: none; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); transition: all 0.3s; }
+    .theme-toggle-btn:hover { background: var(--primary); color: white; }
+    .lang-toggle-btn { background: var(--bs-tertiary-bg); border: none; height: 40px; padding: 0 10px; border-radius: 10px; display: flex; align-items: center; gap: 6px; color: var(--text-muted); font-weight: 600; font-size: 0.85rem; }
+    
+    [data-bs-theme="dark"] .d-none-dark { display: none !important; }
+    [data-bs-theme="light"] .d-none-light { display: none !important; }
+    
+    /* Fix for invisible navbar in dark mode */
+    [data-bs-theme="dark"] .navbar { 
+        background-color: #000000 !important; 
+        border-bottom: 1px solid #333 !important;
+    }
+    [data-bs-theme="dark"] .navbar .navbar-brand,
+    [data-bs-theme="dark"] .navbar .nav-link,
+    [data-bs-theme="dark"] .navbar span,
+    [data-bs-theme="dark"] .navbar i:not(.text-primary) { 
+        color: #ffffff !important; 
+    }
+    
+    /* Ensure the labels update on load */
+    [data-bs-theme="dark"] #themeToggle .bi-moon-stars-fill { display: none; }
+    [data-bs-theme="light"] #themeToggle .bi-sun-fill { display: none; }
+</style>
+
+<script>
+    // Set active language code on load
+    window.addEventListener('load', function() {
+        const savedLang = localStorage.getItem('selectedLanguage') || 'en';
+        const el = document.getElementById('activeLangCode');
+        if (el) el.textContent = savedLang.toUpperCase();
+    });
+
+    // Theme Toggle logic
+    document.addEventListener('DOMContentLoaded', function() {
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                const current = document.documentElement.getAttribute('data-bs-theme');
+                const target = current === 'light' ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-bs-theme', target);
+                localStorage.setItem('theme', target);
+            });
+        }
+    });
+</script>

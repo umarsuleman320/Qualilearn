@@ -21,29 +21,79 @@ from datetime import timedelta, datetime
 def ai_chat(request):
     if request.method == 'POST':
         try:
-            # Configure Gemini inside the request
-            genai.configure(api_key=django_settings.GEMINI_API_KEY)
-            
-            # Using gemini-2.5-flash because gemini-1.5-flash is not available for this API Key
-            model = genai.GenerativeModel('gemini-2.5-flash')
+            # Configure Gemini
+            api_key = django_settings.GEMINI_API_KEY
+            if api_key == "YOUR_GEMINI_API_KEY_HERE" or not api_key:
+                return JsonResponse({'reply': "Hi! I'm ready to help, but the GEMINI_API_KEY needs to be added in settings.py first!"})
 
-            data = json.loads(request.body)
-            user_message = data.get('message', '')
-            language = data.get('language', 'English')
+            genai.configure(api_key=api_key)
+            model = genai.GenerativeModel('gemini-1.5-flash')
 
-            system_prompt = f"""You are QualiLearn AI, a friendly and patient science tutor for ABU Zaria students.
-            Always answer in clear {language}.
-            Be patient and use simple explanations."""
+            # Support both JSON and multipart/form-data (for file uploads)
+            if request.content_type and 'multipart/form-data' in request.content_type:
+                user_message = request.POST.get('message', '')
+                language = request.POST.get('language', 'English')
+                uploaded_file = request.FILES.get('file', None)
+            else:
+                data = json.loads(request.body)
+                user_message = data.get('message', '')
+                language = data.get('language', 'English')
+                uploaded_file = None
 
-            response = model.generate_content(f"{system_prompt}\n\nStudent: {user_message}")
+            # Strong language enforcement
+            lang_map = {
+                'Hausa': 'Hausa (Harshen Hausa)',
+                'Yoruba': 'Yoruba (Èdè Yorùbá)',
+                'Igbo': 'Igbo (Asụsụ Igbo)',
+                'French': 'French (Français)',
+                'Arabic': 'Arabic (اللغة العربية)',
+                'English': 'English',
+            }
+            lang_full = lang_map.get(language, language)
+
+            system_prompt = f"""STRICT INSTRUCTION: You MUST reply ONLY in {lang_full}. Do NOT use English unless {lang_full} is English. Every single word in your response must be in {lang_full}.
+
+You are QualiLearn AI, a friendly tutor for Nigerian students studying for JAMB and WAEC.
+Be clear, encouraging, and give step-by-step explanations.
+If the student uploads an image or document, analyze it carefully.
+
+Remember: RESPOND ONLY IN {lang_full}."""
+
+            # Build content parts for multimodal input
+            content_parts = [system_prompt + f"\n\nStudent: {user_message}"]
+
+            if uploaded_file:
+                import PIL.Image
+                import io
+                file_bytes = uploaded_file.read()
+                file_type = uploaded_file.content_type
+
+                if 'image' in file_type:
+                    # Send image directly to Gemini
+                    image = PIL.Image.open(io.BytesIO(file_bytes))
+                    content_parts = [
+                        system_prompt + f"\n\nThe student has uploaded an image and says: '{user_message}'. Please analyze the image and respond helpfully.",
+                        image
+                    ]
+                elif 'pdf' in file_type:
+                    # For PDFs, extract text or send as bytes
+                    content_parts = [
+                        system_prompt + f"\n\nThe student has uploaded a PDF document and says: '{user_message}'. The file data is attached.",
+                        {"mime_type": "application/pdf", "data": file_bytes}
+                    ]
+
+            response = model.generate_content(content_parts)
             ai_reply = response.text
 
             return JsonResponse({'reply': ai_reply})
 
         except Exception as e:
             print("Gemini Error:", str(e))
-            return JsonResponse({'reply': "Sorry, the AI is busy right now. Please try again in a few seconds."})
-        
+            error_msg = str(e)
+            if '429' in error_msg or 'quota' in error_msg.lower():
+                return JsonResponse({'reply': "The AI is taking a short break due to high usage. Please wait a moment and try again!"})
+            return JsonResponse({'reply': "Sorry, the AI encountered an issue. Please try again in a few seconds."})
+
         finally:
             # Increment study time for AI Chat interaction
             if request.user.is_authenticated:
@@ -51,7 +101,8 @@ def ai_chat(request):
                 profile.total_study_minutes += 2
                 profile.save()
 
-    return JsonResponse({'reply': 'Hello! 👋 How can I help you today?'})
+    return JsonResponse({'reply': 'Hello! How can I help you today?'})
+
 
 # ================== AUTHENTICATION ==================
 def logout_view(request):

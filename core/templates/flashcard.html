@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="light">
 <head>
+    <script>
+        (function() {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', theme);
+        })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Flashcards Selection - QualiLearn">
@@ -91,7 +97,8 @@
                 <a class="navbar-brand fw-bold fs-4" href="{% url 'dashboard' %}">QualiLearn</a>
             </div>
 
-            <div class="dropdown ms-auto">
+            {% include 'partials/navbar_controls.html' %}
+<div class="dropdown ms-auto">
                 <button class="btn btn-link p-0" type="button" data-bs-toggle="dropdown">
                     <div class="d-flex align-items-center gap-2">
                         <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold" style="width:40px;height:40px;">
@@ -188,5 +195,6 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+{% include 'partials/translations.html' %}
 </body>
 </html>

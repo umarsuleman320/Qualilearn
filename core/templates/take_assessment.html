@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="light">
 <head>
+    <script>
+        (function() {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', theme);
+        })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Take Assessment • QualiLearn</title>
@@ -212,5 +218,6 @@
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Submitting...';
         };
     </script>
+{% include 'partials/translations.html' %}
 </body>
 </html>

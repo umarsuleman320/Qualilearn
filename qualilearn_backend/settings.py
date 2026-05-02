@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-7_m-v45h$$+%2xyqmk8@osio7_@bmmfr$rxnzjzxyxmcstkyw=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -47,6 +47,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -108,7 +109,16 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
+
+LANGUAGES = [
+    ('en', 'English'),
+    ('ar', 'Arabic'),
+    ('ha', 'Hausa'),
+    ('yo', 'Yoruba'),
+    ('ig', 'Igbo'),
+    ('fr', 'French'),
+]
 
 TIME_ZONE = 'UTC'
 
@@ -122,11 +132,8 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-# ====================== GEMINI API KEY ======================
-GEMINI_API_KEY = 'AIzaSyB9yjOEvLbCFNE3V58qybKDcMRRiRd5G5o'
+# Gemini API Key configuration moved to the bottom for better visibility
 
-# Optional: Print to confirm it's loaded
-print("GEMINI_API_KEY loaded successfully")
 
 # Email Backend (Local testing, prints emails to console)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -155,3 +162,7 @@ REST_FRAMEWORK = {
 
 # CORS Settings (Allow mobile app to connect)
 CORS_ALLOW_ALL_ORIGINS = True
+
+# Gemini AI Configuration
+import os
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', 'YOUR_GEMINI_API_KEY_HERE')

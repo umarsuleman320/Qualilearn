@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="light">
 <head>
+    <script>
+        (function() {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', theme);
+        })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="AI Tutor Chat - QualiLearn">
@@ -115,7 +121,8 @@
 
     <nav class="navbar navbar-expand-lg bg-white border-bottom px-4">
         <a class="navbar-brand fw-bold text-primary" href="{% url 'dashboard' %}">QualiLearn AI</a>
-        <div class="ms-auto">
+        {% include 'partials/navbar_controls.html' %}
+<div class="ms-auto">
             <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">Exit Chat</a>
         </div>
     </nav>
@@ -138,33 +145,52 @@
 
     <!-- Input Bar -->
     <div class="input-container">
-        <div class="input-group">
-            <input type="text" id="userInput" class="form-control form-control-lg border-2 rounded-pill-start" placeholder="Ask your question here..." style="border-top-left-radius: 2rem; border-bottom-left-radius: 2rem;">
+            <label class="btn btn-outline-primary px-3 d-flex align-items-center" for="fileInput" style="border-top-left-radius: 2rem; border-bottom-left-radius: 2rem; border-right: 0;">
+                <i class="bi bi-paperclip fs-5"></i>
+            </label>
+            <input type="file" id="fileInput" class="d-none" accept="image/*,application/pdf">
+            <input type="text" id="userInput" class="form-control form-control-lg border-2" placeholder="Ask your question here..." style="border-left: 0; border-right: 0;">
             <button class="btn btn-primary px-4" id="sendBtn" style="border-top-right-radius: 2rem; border-bottom-right-radius: 2rem;">
                 <i class="bi bi-send-fill"></i>
             </button>
-        </div>
     </div>
 
     <script>
         const chatArea = document.getElementById('chatArea');
         const userInput = document.getElementById('userInput');
         const sendBtn = document.getElementById('sendBtn');
+        const fileInput = document.getElementById('fileInput');
 
-        function appendMessage(text, isUser) {
+        function appendMessage(text, isUser, fileUrl = null) {
             const msg = document.createElement('div');
             msg.className = `message ${isUser ? 'message-user' : 'message-ai'}`;
-            msg.innerHTML = isUser ? text : `<strong>AI Tutor:</strong><br>${text}`;
+            
+            let content = '';
+            if (fileUrl) {
+                content += `<img src="${fileUrl}" style="max-width: 200px; border-radius: 1rem; margin-bottom: 0.5rem; display: block;">`;
+            }
+            content += isUser ? text : `<strong>AI Tutor:</strong><br>${text}`;
+            
+            msg.innerHTML = content;
             chatArea.appendChild(msg);
             chatArea.scrollTop = chatArea.scrollHeight;
         }
 
         async function handleSend() {
             const message = userInput.value.trim();
-            if (!message) return;
+            const file = fileInput.files[0];
+            const currentLang = localStorage.getItem('selectedLanguage') || 'English';
+            
+            if (!message && !file) return;
 
-            appendMessage(message, true);
+            let fileDataUrl = null;
+            if (file && file.type.startsWith('image/')) {
+                fileDataUrl = URL.createObjectURL(file);
+            }
+
+            appendMessage(message, true, fileDataUrl);
             userInput.value = '';
+            fileInput.value = '';
 
             // Loading indicator
             const loader = document.createElement('div');
@@ -173,11 +199,15 @@
             chatArea.appendChild(loader);
             chatArea.scrollTop = chatArea.scrollHeight;
 
+            const formData = new FormData();
+            formData.append('message', message);
+            formData.append('language', currentLang);
+            if (file) formData.append('file', file);
+
             try {
                 const response = await fetch('/api/ai-chat/', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: message })
+                    body: formData
                 });
                 const data = await response.json();
                 loader.remove();
@@ -191,7 +221,6 @@
         sendBtn.addEventListener('click', handleSend);
         userInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') handleSend(); });
 
-        // Quick suggestions
         document.querySelectorAll('.quick-suggestion').forEach(btn => {
             btn.addEventListener('click', () => {
                 userInput.value = btn.textContent;
@@ -199,5 +228,6 @@
             });
         });
     </script>
+{% include 'partials/translations.html' %}
 </body>
 </html>
