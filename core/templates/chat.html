@@ -40,7 +40,7 @@
             font-family: 'Outfit', sans-serif;
             background: linear-gradient(135deg, #f0f4ff 0%, #e5e7eb 100%);
             background-attachment: fixed;
-            height: 100vh;
+            height: 100dvh; /* Dynamic viewport height for mobile */
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -62,7 +62,7 @@
         .app-container {
             flex: 1;
             display: flex;
-            height: calc(100vh - 65px);
+            height: calc(100dvh - 65px);
             overflow: hidden;
         }
 
@@ -83,7 +83,7 @@
         /* Message Bubbles */
         .message-group {
             display: flex;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
             width: 100%;
             animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
@@ -116,11 +116,11 @@
         }
 
         .bubble {
-            max-width: 70%;
-            padding: 1rem 1.25rem;
+            max-width: 75%;
+            padding: 0.85rem 1.1rem;
             border-radius: 1.25rem;
             position: relative;
-            font-size: 1.05rem;
+            font-size: 1rem;
             line-height: 1.5;
             box-shadow: 0 4px 15px rgba(0,0,0,0.03);
         }
@@ -139,7 +139,7 @@
 
         /* Message Animations */
         @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -300,10 +300,23 @@
         .bubble code { background: rgba(0,0,0,0.1); padding: 2px 4px; border-radius: 4px; }
 
         @media (max-width: 768px) {
-            .bubble { max-width: 85%; }
-            .chat-history { padding: 1rem; }
-            .chat-input-wrapper { padding: 1rem; }
-            .suggestions-row { padding: 0 1rem 0.5rem; }
+            .bubble { 
+                max-width: 90%; 
+                font-size: 0.95rem;
+                padding: 0.75rem 0.9rem;
+            }
+            .avatar {
+                width: 34px;
+                height: 34px;
+                margin: 0 8px;
+                font-size: 0.9rem;
+            }
+            .chat-history { padding: 0.75rem; }
+            .chat-input-wrapper { padding: 0.75rem 0.5rem; }
+            .input-card { border-radius: 1rem; }
+            .suggestions-row { padding: 0 0.75rem 0.5rem; }
+            .action-btn { width: 38px; height: 38px; }
+            .chat-input { font-size: 1rem; padding: 0.5rem 0.75rem; }
         }
     </style>
     {% include 'partials/pwa_support.html' %}

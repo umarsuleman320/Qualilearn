@@ -539,10 +539,8 @@ def vocational(request):
         'soft_skills': soft_skills
     })
 
-@login_required
-def setup_admin(request):
-    """Temporary view to promote a user to superuser status."""
-    # Only allow if the secret key is provided in the URL
+
+
     if request.GET.get('key') == 'qualilearn_admin_2024':
         user = request.user
         user.is_staff = True

@@ -43,9 +43,6 @@ urlpatterns = [
     
     # AI Chat API
     path('api/ai-chat/', views.ai_chat, name='ai_chat'),
-    
-    # Temporary Secret Setup (I will remove this after you use it)
-    path('secret-admin-setup/', views.setup_admin, name='setup_admin'),
 ]
 
 from django.conf import settings
