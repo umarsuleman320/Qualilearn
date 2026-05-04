@@ -5,7 +5,20 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 import os
 
+class LearningCategory(models.Model):
+    name = models.CharField(max_length=100)
+    icon_class = models.CharField(max_length=50, default='bi-book', help_text="Bootstrap icon class")
+    order = models.IntegerField(default=0)
+
+    class Meta:
+        verbose_name_plural = "Learning Categories"
+        ordering = ['order', 'name']
+
+    def __str__(self):
+        return self.name
+
 class Subject(models.Model):
+    category = models.ForeignKey(LearningCategory, on_delete=models.SET_NULL, null=True, blank=True, related_name='subjects')
     name = models.CharField(max_length=100)
     document = models.FileField(upload_to='question_banks/', null=True, blank=True, help_text="Upload a .docx file containing the questions. Existing questions will be wiped and replaced.")
     flashcard_document = models.FileField(upload_to='flashcard_banks/', null=True, blank=True, help_text="Upload a .docx file for Flashcards (Format: Front: text \\n Back: text). Existing flashcards will be wiped and replaced.")
@@ -186,28 +199,18 @@ class BroadcastMessage(models.Model):
 
     def __str__(self):
         return self.subject
-class LearningCategory(models.Model):
-    name = models.CharField(max_length=100)
-    icon_class = models.CharField(max_length=50, default='bi-book', help_text="Bootstrap icon class")
-    order = models.IntegerField(default=0)
-
-    class Meta:
-        verbose_name_plural = "Learning Categories"
-        ordering = ['order', 'name']
-
-    def __str__(self):
-        return self.name
 
 class LearningTopic(models.Model):
-    category = models.ForeignKey(LearningCategory, on_delete=models.CASCADE, related_name='topics')
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='learning_topics', null=True)
     name = models.CharField(max_length=200)
+    youtube_url = models.URLField(max_length=500, blank=True, null=True)
     order = models.IntegerField(default=0)
 
     class Meta:
         ordering = ['order', 'name']
 
     def __str__(self):
-        return f"{self.category.name} - {self.name}"
+        return f"{self.subject.name if self.subject else 'No Subject'} - {self.name}"
 
 class LearningProgress(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

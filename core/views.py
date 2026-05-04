@@ -336,48 +336,56 @@ def submit_assessment(request):
 
 @login_required
 def learning(request):
-    categories = LearningCategory.objects.all().prefetch_related('topics')
-    
+    # Subjects are the real top-level items (each Subject has learning_topics)
+    subjects = Subject.objects.select_related('category').prefetch_related('learning_topics').order_by('category__order', 'name')
+
     # Get user progress
     user_progress = LearningProgress.objects.filter(user=request.user, is_completed=True).values_list('topic_id', flat=True)
     user_progress_set = set(user_progress)
-    
+
     # Calculate overall progress
     total_topics = LearningTopic.objects.count()
-    completed_count = user_progress_set.__len__()
+    completed_count = len(user_progress_set)
     overall_percentage = round((completed_count / total_topics) * 100) if total_topics > 0 else 0
-    
-    # Prepare categories with completion status
+
+    # Build syllabus list — one entry per Subject, topics inside
     syllabus = []
-    for cat in categories:
-        cat_topics = []
-        cat_completed = 0
-        topics = cat.topics.all()
-        for t in topics:
+    for subj in subjects:
+        subj_topics = []
+        subj_completed = 0
+
+        for t in subj.learning_topics.all():
             is_done = t.id in user_progress_set
-            if is_done: cat_completed += 1
-            cat_topics.append({
+            if is_done:
+                subj_completed += 1
+            # Use stored YouTube URL if available, fall back to a search link
+            yt_url = t.youtube_url if t.youtube_url else (
+                f"https://www.youtube.com/results?search_query="
+                f"{subj.name.replace(' ', '+')}+{t.name.replace(' ', '+')}+JAMB+WAEC+tutorial"
+            )
+            subj_topics.append({
                 'id': t.id,
                 'name': t.name,
                 'is_completed': is_done,
-                'youtube_search': f"https://www.youtube.com/results?search_query={cat.name} {t.name} learning tutorial"
+                'youtube_url': yt_url,
             })
-        
+
+        subj_total = len(subj_topics)
         syllabus.append({
-            'id': cat.id,
-            'name': cat.name,
-            'icon': cat.icon_class,
-            'topics': cat_topics,
-            'completed_count': cat_completed,
-            'total_count': topics.count(),
-            'percentage': round((cat_completed / topics.count()) * 100) if topics.count() > 0 else 0
+            'id': subj.id,
+            'name': subj.name,
+            'icon': subj.category.icon_class if subj.category else 'bi-book',
+            'topics': subj_topics,
+            'completed_count': subj_completed,
+            'total_count': subj_total,
+            'percentage': round((subj_completed / subj_total) * 100) if subj_total > 0 else 0,
         })
 
     return render(request, 'learning.html', {
         'syllabus': syllabus,
         'overall_percentage': overall_percentage,
         'completed_count': completed_count,
-        'total_topics': total_topics
+        'total_topics': total_topics,
     })
 
 @csrf_exempt
